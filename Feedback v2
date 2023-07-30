@@ -1,0 +1,48 @@
+function generatePrompt() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Sheet1');
+  var studentName = sheet.getRange('E2').getValue();
+  var subject = sheet.getRange('L3').getValue();
+  var pronouns = sheet.getRange('F2').getValue();
+  var notes = sheet.getRange('E3'). getValue();
+  var categories = ['Afbildning af data: ', 'Beregninger: ', 'Sprog: '];
+  var subcategoriesStartRow = [6, 12, 18];
+  var subcategoriesEndRow = [9, 15, 21];
+  var actualCategories = [];
+     for (var i = 0; i < categories.length; i++) {
+      var j = subcategoriesStartRow[i]
+        if (sheet.getRange('K' + (j-1)).getValue() == true) {
+          actualCategories.push(sheet.getRange('A' + (j-1)).getValue())
+        }
+     } 
+  
+  var report = 'Skriv på dansk. Skriv et respons til en biologi opgave på højest ' + actualCategories.length * 50 + ' ord fra en lærer til en elev på gymnasieniveau. Læreren har fokuseret på kategorierne: ' + actualCategories + '. Begynd med "Hej ' + studentName + '". Skriv klart og med få tillægsord. Lad være med at skrive "Kære" og "Med venlig hilsen". Eleven kan få en score mellem 0 og 4. Scorerne betyder: '
+  for (var i = 0; i < 5; i++) {
+    report += i;
+    report += ' = ';
+    report += sheet.getRange('E' + (74+i)).getValue();
+    report += ' ';
+  }
+  
+ report += 'Vær opmærksom på at score 3 og 4 er gode og tilstrækkelige. Varier sproget. Lad være med at liste kategorierne i rækkefølge. Lad være med at angive tal i dit svar.'
+
+
+  for (var i = 0; i < categories.length; i++) {
+    for (var j = subcategoriesStartRow[i]; j <= subcategoriesEndRow[i]; j++) {
+      var subcategory = sheet.getRange('C' + j).getValue();
+      var rating = '';
+      var quote = '';
+      if (sheet.getRange('J' + j).getValue() === false) {
+       rating = sheet.getRange('K' + j).getValue();
+       report += ' I kategorien ' + categories[i] + subcategory + ', har eleven scoret ' + rating + '.';
+        if (!sheet.getRange('L' + j).isBlank()) {
+          quote += sheet.getRange('L' + j).getValue();
+          quote +='"'; 
+          report += ' Inddrag dette fra elevens opgave: ' + quote + '. ';
+          quote = '"';
+      }
+      }
+    }
+  }
+  report += ' Du må IKKE vise tal.';
+  return report;
+}
